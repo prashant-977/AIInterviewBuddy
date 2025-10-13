@@ -1,0 +1,25 @@
+# Ignore environment files
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment folders
+venv/
+.env/
+.venv/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# VSCode / IDE files
+.vscode/
+.idea/
+
+# Streamlit cache
+.streamlit/
+
+# OS / system files
+.DS_Store
+Thumbs.db
