@@ -5,8 +5,13 @@ from analysis.preparation_suggestion import get_preparation_suggestions
 
 import datetime
 import os
+import pandas as pd
 import glob
 import json # Import json
+import datetime
+import os
+import pandas as pd
+
 
 def main():
     # Check for existing job description files
@@ -35,13 +40,15 @@ def main():
         links = scrape_job(job_title)
         job_descriptions = fetch_job_descriptions(links) # This now saves to a file and returns the descriptions dictionary
 
-
     df_cv = pd.read_excel("data/CV.xlsx", header=None)
     #df_cv
     st=''
     for index, row in df_cv.iterrows():
       #print(row.values[1])
       st+=row.values[1]
+    candidate_profile = st # Using the 'st' variable from your notebook
+    # Example candidate profile (load from file or DB in future)
+    # Assuming 'st' is your candidate profile string, already loaded
     candidate_profile = st # Using the 'st' variable from your notebook
 
     # Check for existing comparison results file
@@ -51,9 +58,16 @@ def main():
         print(f"Using existing comparison results from: {latest_comparison_file}")
         with open(latest_comparison_file, "r", encoding="utf-8") as f:
             comparison_results = json.load(f)
+        # Skip the comparison step if results were loaded
+        perform_comparison = False
     else:
-        # Compare candidate profile with each job description and save results
+        # No existing comparison file, so perform the comparison
         comparison_results = {}
+        perform_comparison = True
+
+
+    if perform_comparison:
+        print("Performing job comparisons...")
         for job_header, job_description in job_descriptions.items():
             print(f"Comparing with {job_header}...")
             comparison_output = compare_profiles(candidate_profile, job_description)
@@ -67,7 +81,8 @@ def main():
             json.dump(comparison_results, f, indent=4)
 
         print(f"Comparison results saved to {output_filename}")
-		
+
+
     # --- Add the preparation suggestions logic here ---
     if not comparison_results or not job_descriptions:
          print("Cannot provide preparation suggestions without comparison results and job descriptions.")
@@ -94,9 +109,11 @@ def main():
     # Pass the actual job index (0, 1, 2...) to the function
     suggestions = get_preparation_suggestions(selected_job_index, comparison_results, job_descriptions)
     print("\n--- Preparation Suggestions ---")
-    print(suggestions)		
+    print(suggestions)
 
 
+# To run the main function:
+# main()
 '''
     # Ask custom questions
     questions = [
