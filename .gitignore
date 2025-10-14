@@ -1,25 +1,20 @@
 # Ignore environment files
 .env
 
+# Virtual environment
+aibuddy/
+
 # Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Virtual environment folders
-venv/
-.env/
-.venv/
-
-# Jupyter notebooks checkpoints
-.ipynb_checkpoints/
-
-# VSCode / IDE files
+# IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# Streamlit cache
-.streamlit/
-
-# OS / system files
+# OS files
 .DS_Store
 Thumbs.db
