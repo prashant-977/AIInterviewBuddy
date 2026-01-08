@@ -8,3 +8,5 @@ llama-index
 openpyxl
 datetime
 reportlab
+chromadb
+pytest
