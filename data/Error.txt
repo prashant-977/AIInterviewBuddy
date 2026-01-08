@@ -1,0 +1,39 @@
+Perfect! The traceback shows the model hit its context limit (8810 tokens vs 8192 max). My next step is to explain why that happens and give short, medium, and long‑term fixes you can apply.## TL;DR ✅
+Yes — the error is exactly a context-window issue: the model’s max context is 8192 tokens but your messages + functions totaled 8810 tokens, so the OpenAI API rejected the request.
+
+Why this happens 🔍
+Every message (system/user/assistant), function schema, and tool call contributes tokens to the context.
+Your code builds a very long prompt (the full candidate portfolio + full job description) and passes it to the agent; that combined input exceeds the model’s token limit.
+Fixes (short → recommended → long-term) 🔧
+Quick fix — truncate inputs (fast, low effort) ⚡
+Trim the candidate or job text before calling the agent:
+
+MAX_CHARS = 25000  # approximate; safer to use token countscandidate = candidate[:MAX_CHARS]job = job[:MAX_CHARS]prompt = f"Compare candidate: {candidate}\n\nJob: {job}..."result = agent.invoke(prompt)
+Note: character slicing is simple but imperfect vs token slicing.
+Better — summarize before comparing (recommended) ✅
+Summarize the long documents into concise skill lists or key bullets, then call the agent with those summaries:
+
+summary = summarizer_llm.predict("Summarize key skills and requirements from: " + job)candidate_summary = summarizer_llm.predict("Summarize candidate skills: " + candidate)prompt = f"Compare summaries: {candidate_summary} vs {summary}..."
+This keeps the intent and drastically reduces tokens.
+Robust — chunk + aggregate or RAG (best for scale) 🧩
+Chunk the long job posting into pieces, compare the candidate to each chunk and combine results, or
+Build embeddings (FAISS/Chroma) and retrieve only the most relevant chunks (top-k) to pass to the model.
+This avoids sending everything at once and scales to many/long docs.
+Use a larger-context model (if available) 🧠
+Switch to a model with a bigger window (16k/32k) to reduce the chance of this error — but still prefer summarization/retrieval for cost and speed.
+Measure tokens precisely (diagnose & prevent) 🔍
+Use tiktoken (or LangChain token counting) to compute tokens before sending:
+
+import tiktoken
+enc = tiktoken.encoding_for_model("gpt-4")
+tokens = len(enc.encode(text))
+If tokens > limit, summarize or trim automatically.
+Suggested immediate change for your repo ✨
+In compare_profiles, summarize both candidate_portfolio and job_description before building prompt, or add a simple token-count check that summarizes if > 7000 tokens. I can implement a minimal summarizer + token check for you if you want.
+Need me to:
+
+add an automatic summarization + token-check to compare_portfolio.py, or
+implement an embeddings + retrieval flow (longer change)?
+Which one do you prefer?
+
+Raptor mini (Preview) • 1x
