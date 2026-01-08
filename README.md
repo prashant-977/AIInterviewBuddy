@@ -30,9 +30,22 @@ This repo now includes a Chroma-backed vector store to persist embeddings and en
   ```
 
 ## Notes & roadmap
-- Default backend is **Chroma** (persistent, metadata support, easy to use on Windows).
-- You can switch to the legacy LlamaIndex in `create_vector_store(..., backend='llama')` if needed.
-- Future: optionally add a config switch to toggle FAISS/Chroma and a Gemini embedding adapter (for the free Gemini model) before migrating to Hugging Face deployment.
-- Examples: see `examples/chroma_demo.py`.
+- **Default backend** is **Chroma** (persistent, metadata support, easy to use on Windows).
+- **Switching backends**: set the environment variable `VECTOR_BACKEND` to `llama` to use the original `GPTVectorStoreIndex`, e.g.:
 
-If you want, I can now add tests, a config switch for FAISS, or implement Gemini embedding integration next.
+```bash
+set VECTOR_BACKEND=llama   # PowerShell on Windows
+```
+
+Alternatively pass `backend='llama'` to `create_vector_store(...)`.
+
+- **Embedding provider**: `ChromaStore` uses LangChain `OpenAIEmbeddings` by default (reads `OPENAI_API_KEY`), but you can pass any object implementing `embed_documents(texts)` and `embed_query(text)` to the `ChromaStore(..., embeddings=your_embedder)` constructor. This makes it straightforward to swap in Gemini or a Hugging Face embedding model later.
+
+- **Future work:**
+  - Add an explicit config file or `dataclass` for backend selection and tuning.
+  - Add FAISS support (switchable) for very large indexes if needed.
+  - Add Gemini embedding adapter and a Hugging Face deployment path.
+
+- **Examples:** see `examples/chroma_demo.py`.
+
+If you want, I can now add tests, an explicit config module for toggling FAISS/Chroma, or implement Gemini embedding integration next.
