@@ -48,4 +48,3 @@ Alternatively pass `backend='llama'` to `create_vector_store(...)`.
 
 - **Examples:** see `examples/chroma_demo.py`.
 
-If you want, I can now add tests, an explicit config module for toggling FAISS/Chroma, or implement Gemini embedding integration next.
